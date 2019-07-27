@@ -7,7 +7,13 @@ class UsersCtl {
   }
   async findById(ctx) {
     const id = ctx.params.id;
-    const user = await User.findById(id);
+    const { fields } = ctx.query;
+    const selectFields = fields
+      .split(";")
+      .filter(v => v)
+      .map(v => " + " + v)
+      .join("");
+    const user = await User.findById(id).select("");
     if (!user) ctx.throw(404, "用户不存在");
     ctx.body = user;
   }
@@ -38,7 +44,14 @@ class UsersCtl {
       password: {
         type: "string",
         require: false
-      }
+      },
+      avatar_url: { type: "string", require: false },
+      gender: { type: "string", require: false },
+      headline: { type: "string", require: false },
+      locations: { type: "array", itemType: "string", require: false },
+      business: { type: "string", require: false },
+      employments: { type: "array", itemType: "object", require: false },
+      educations: { type: "array", itemType: "object", require: false }
     });
     const user = await User.findByIdAndUpdate(id, ctx.request.body);
     if (!user) ctx.throw(404, "用户不存在");
@@ -81,6 +94,42 @@ class UsersCtl {
       ctx.throw(403, "没有权限");
     }
     await next();
+  }
+  async checkUserExist(ctx, next) {
+    const user = await User.findById(ctx.params.id);
+    if (!user) ctx.throw(404, "用户不存在");
+    await next();
+  }
+  // 获取关注列表
+  async listFollowing(ctx) {
+    const user = await User.findById(ctx.params.id)
+      .select("+following")
+      .populate("following");
+    if (!user) ctx.throw(404);
+    ctx.body = user.following;
+  }
+  // 关注
+  async follow(ctx) {
+    const me = await User.findById(ctx.state.user._id).select("+following");
+    if (!me.following.map(id => id.toString()).includes(ctx.params.id)) {
+      me.following.push(ctx.params.id);
+      me.save();
+    }
+    ctx.status = 204;
+  }
+  async unfollow(ctx) {
+    const me = await User.findById(ctx.state.user._id).select("+following");
+    const index = me.following.map(v => v.toString()).indexOf(ctx.params.id);
+    if (index > -1) {
+      me.following.splice(index, 1);
+      me.save();
+    }
+    ctx.status = 204;
+  }
+  // 获取他的粉丝
+  async listFollowers(ctx) {
+    const users = await User.find({ following: ctx.params.id });
+    ctx.body = users;
   }
 }
 module.exports = new UsersCtl();

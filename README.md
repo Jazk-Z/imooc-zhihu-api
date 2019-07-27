@@ -106,3 +106,5 @@
 - 包含元数据
 - Signature
   Signature = HMACSHA256(base64UrlEncode(header) + '.' + base64UrlEncode(payload), secret)
+
+## mongodb 一个字段不可超过 4M
