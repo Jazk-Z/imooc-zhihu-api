@@ -5,6 +5,9 @@ class UsersCtl {
   }
   findById(ctx) {
     const id = ctx.params.id;
+    if (id >= db.length) {
+      ctx.throw(412, "先决条件失败");
+    }
     ctx.body = db[parseInt(id, 10)];
   }
   create(ctx) {
