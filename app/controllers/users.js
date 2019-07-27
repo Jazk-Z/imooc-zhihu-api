@@ -3,11 +3,16 @@ const config = require("../config");
 const User = require("../models/users");
 class UsersCtl {
   async find(ctx) {
-    ctx.body = await User.find();
+    const { per_page = 10 } = ctx.query;
+    const perpage = Math.round(Math.max(per_page * 1, 1));
+    const page = Math.round(Math.max(ctx.query.page * 1, 1) - 1);
+    ctx.body = await User.find()
+      .limit(per_page)
+      .skip(page * per_page);
   }
   async findById(ctx) {
     const id = ctx.params.id;
-    const { fields } = ctx.query;
+    const { fields = "" } = ctx.query;
     const selectFields = fields
       .split(";")
       .filter(v => v)
