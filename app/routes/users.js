@@ -1,5 +1,5 @@
 const Router = require("koa-router");
-const jwt = require("jsonwebtoken");
+const jwt = require("koa-jwt");
 const config = require("../config");
 const router = new Router({ prefix: "/users" });
 const {
@@ -12,17 +12,7 @@ const {
   checkAuth
 } = require("../controllers/users");
 // 认证
-const auth = async (ctx, next) => {
-  const { authorization = "" } = ctx.request.header;
-  const token = authorization.replace("Bearer ", "");
-  try {
-    const user = jwt.verify(token, config.secret);
-    ctx.state.user = user;
-  } catch (error) {
-    ctx.throw(401, error.message);
-  }
-  await next();
-};
+const auth = jwt({ secret: config.secret });
 router.get("/", find);
 router.get("/:id", findById);
 router.post("/", create);
