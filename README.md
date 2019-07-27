@@ -81,3 +81,28 @@
 - 方便存储复杂数据结构
 
 ## 不用设计表结构 但是 json 的结构还是要设计的 schema
+
+## Session 简介
+
+- 相比 JWT 最大的优势在于可以主动清除 session
+- session 保存在服务器端 相对比较安全
+- 结合 cookie 使用 较为灵活 兼容性较好
+
+- cookie + session 在跨域场景表现不好
+- 如果分布式部署 需要做多机共享 session 机制
+- 基于 cookie 的机制很容易被 CSRF
+- 查询 session 信息可能会有数据库的查询
+
+## JSON Web Token （JWT）
+
+— Header
+
+- typ: token 的类型
+- alg: 使用 hash 算法
+
+- Payload
+- Payload 可以加密
+- 存储传递的信息
+- 包含元数据
+- Signature
+  Signature = HMACSHA256(base64UrlEncode(header) + '.' + base64UrlEncode(payload), secret)
