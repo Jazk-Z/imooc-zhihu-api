@@ -1,53 +1,40 @@
-const db = [{ name: "zzy" }];
+const User = require("../models/users");
 class UsersCtl {
-  find(ctx) {
-    ctx.body = db;
+  async find(ctx) {
+    ctx.body = await User.find();
   }
-  findById(ctx) {
+  async findById(ctx) {
     const id = ctx.params.id;
-    if (id >= db.length) {
-      ctx.throw(412, "先决条件失败");
-    }
-    ctx.body = db[parseInt(id, 10)];
+    const user = await User.findById(id);
+    if (!user) ctx.throw(404, "用户不存在");
+    ctx.body = user;
   }
-  create(ctx) {
+  async create(ctx) {
     ctx.verifyParams({
       name: {
         type: "string",
         required: true
-      },
-      age: {
-        type: "number",
-        required: false
       }
     });
-    db.push(ctx.request.body);
-    ctx.body = ctx.request.body;
+    const user = await new User(ctx.request.body).save();
+    ctx.body = user;
   }
-  update(ctx) {
+  async update(ctx) {
     const id = ctx.params.id;
-    if (id >= db.length) {
-      ctx.throw(412, "先决条件失败");
-    }
     ctx.verifyParams({
       name: {
         type: "string",
         required: true
-      },
-      age: {
-        type: "number",
-        required: false
       }
     });
-    db[id] = ctx.request.body;
-    ctx.body = ctx.request.body;
+    const user = await User.findByIdAndUpdate(id, ctx.request.body);
+    if (!user) ctx.throw(404, "用户不存在");
+    ctx.body = user;
   }
-  del(ctx) {
+  async del(ctx) {
     const id = ctx.params.id;
-    if (id >= db.length) {
-      ctx.throw(412, "先决条件失败");
-    }
-    db.splice(id, 1);
+    const user = await User.findByIdAndRemove(id);
+    if (!user) ctx.throw(404, "用户不存在");
     ctx.status = 204;
   }
 }
