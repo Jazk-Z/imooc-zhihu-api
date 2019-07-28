@@ -17,7 +17,9 @@ const commentSchema = new Schema({
   answerId: {
     type: String,
     required: true
-  }
+  },
+  rootCommentId: { type: String },
+  replyTo: { type: Schema.Types.ObjectId, ref: "User" }
 });
 
 // 生成Momal

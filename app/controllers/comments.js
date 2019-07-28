@@ -8,11 +8,12 @@ class CommentCtl {
     ctx.body = await Comment.find({
       content: q,
       questionId: ctx.params.questionId,
-      answerId: ctx.params.answerId
+      answerId: ctx.params.answerId,
+      rootCommentId: ctx.query.rootCommentId
     })
       .limit(perpage)
       .skip(page * perpage)
-      .populate("commentator");
+      .populate("commentator replyTo");
   }
   async findById(ctx) {
     const { fields = "" } = ctx.query;
@@ -23,14 +24,15 @@ class CommentCtl {
       .join("");
     const comment = await Comment.findById(ctx.params.id)
       .select(selectFields)
-      .populate("commentator");
+      .populate("commentator replyTo");
     ctx.body = comment;
   }
   async create(ctx) {
     ctx.verifyParams({
-      content: { type: "string", required: true }
+      content: { type: "string", required: true },
+      rootCommentId: { type: "string", required: false },
+      replyTo: { type: "string", required: false }
     });
-    console.log(ctx.params.answerId);
     const comment = await new Comment({
       ...ctx.request.body,
       commentator: ctx.state.user._id,
@@ -43,7 +45,8 @@ class CommentCtl {
     ctx.verifyParams({
       content: { type: "string", required: true }
     });
-    await ctx.state.comment.update(ctx.request.body);
+    const { content } = ctx.request.body;
+    await ctx.state.comment.update({ content });
     ctx.body = ctx.state.comment;
   }
   async checkCommentExist(ctx, next) {
@@ -69,5 +72,6 @@ class CommentCtl {
       ctx.throw(403, "没有权限");
     await next();
   }
+  // 展示二级评论
 }
 module.exports = new CommentCtl();
