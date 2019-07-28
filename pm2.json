@@ -1,0 +1,16 @@
+{
+  "apps": {
+    "name": "zhihuAPI",
+    "script": "./app/index.js",
+    "watch": true,
+    "ignore_watch": ["node_modules"],
+    "env": {
+      "NODE_ENV": "production",
+      "REMOTE_ADDR": ""
+    },
+    "exec_mode": "cluster_mode",
+    "max_restarts": 5,
+    "log_date_format": "YYYY-MM-DD HH:mm:ss",
+    "autorestart": true
+  }
+}
