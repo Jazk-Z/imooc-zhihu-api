@@ -14,8 +14,13 @@ const {
   follow,
   unfollow,
   listFollowers,
-  checkUserExist
+  checkUserExist,
+  followTopic,
+  unfollowTopic,
+  listFollowingTopics,
+  listQuestions
 } = require("../controllers/users");
+const { checkTopicExist } = require("../controllers/topics");
 // 认证
 const auth = jwt({ secret: config.secret });
 router.get("/", find);
@@ -28,4 +33,8 @@ router.get("/:id/following", listFollowing);
 router.get("/:id/followers", listFollowers);
 router.put("/following/:id", auth, checkUserExist, follow);
 router.delete("/following/:id", auth, checkUserExist, unfollow);
+router.put("/following_topics/:id", auth, checkTopicExist, followTopic);
+router.delete("/following_topics/:id", auth, checkTopicExist, unfollowTopic);
+router.get("/:id/followers_topics", listFollowingTopics);
+router.get("/:id/questions", listQuestions);
 module.exports = router;

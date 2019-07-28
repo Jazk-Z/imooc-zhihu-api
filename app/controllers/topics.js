@@ -1,10 +1,11 @@
 const Topic = require("../models/topics");
+const User = require("../models/users");
 class TopicCtl {
   async find(ctx) {
     const { per_page = 10 } = ctx.query;
     const perpage = Math.round(Math.max(per_page * 1, 1));
     const page = Math.round(Math.max(ctx.query.page * 1, 1) - 1);
-    ctx.body = await Topic.find()
+    ctx.body = await Topic.find({ name: new RegExp(ctx.query.q) })
       .limit(perpage)
       .skip(page * perpage);
   }
@@ -39,8 +40,14 @@ class TopicCtl {
     );
     ctx.body = topic;
   }
-  async A(ctx) {}
-  async A(ctx) {}
-  async A(ctx) {}
+  async checkTopicExist(ctx, next) {
+    const topic = await Topic.findById(ctx.params.id);
+    if (!topic) ctx.throw(404, "话题不存在");
+    await next();
+  }
+  async listToicsFollowers(ctx) {
+    const topics = await User.find({ followingTopics: ctx.params.id });
+    ctx.body = topics;
+  }
 }
 module.exports = new TopicCtl();
