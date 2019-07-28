@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const { Schema, model } = mongoose;
-
+// 问题模型
 const questionSchema = new Schema({
   __v: { type: Number, select: false },
   title: { type: String, required: true },
@@ -11,6 +11,17 @@ const questionSchema = new Schema({
     required: true,
     select: false,
     ref: "User"
+  },
+  // 话题
+  topics: {
+    type: [
+      {
+        type: Schema.Types.ObjectId,
+        required: true,
+        select: false,
+        ref: "Topic"
+      }
+    ]
   }
 });
 

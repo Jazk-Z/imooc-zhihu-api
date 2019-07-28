@@ -8,7 +8,8 @@ const {
   create,
   update,
   listToicsFollowers,
-  checkTopicExist
+  checkTopicExist,
+  listQuestions
 } = require("../controllers/topics");
 // 认证
 const auth = jwt({ secret: config.secret });
@@ -17,4 +18,5 @@ router.get("/:id", findById);
 router.post("/", checkTopicExist, create);
 router.patch("/:id", auth, checkTopicExist, update);
 router.get("/:id/followers", checkTopicExist, listToicsFollowers);
+router.get("/:id/questions", checkTopicExist, listQuestions);
 module.exports = router;

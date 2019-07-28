@@ -18,9 +18,19 @@ const {
   followTopic,
   unfollowTopic,
   listFollowingTopics,
-  listQuestions
+  listQuestions,
+  likeAnswer,
+  listDislikingAnswers,
+  listLikingAnswers,
+  dislikeAnswer,
+  undislikeAnswer,
+  unlikeAnswer,
+  listCollectingAnswers,
+  collectAnswer,
+  uncollectAnswer
 } = require("../controllers/users");
 const { checkTopicExist } = require("../controllers/topics");
+const { checkAnswerExist } = require("../controllers/answers");
 // 认证
 const auth = jwt({ secret: config.secret });
 router.get("/", find);
@@ -37,4 +47,38 @@ router.put("/following_topics/:id", auth, checkTopicExist, followTopic);
 router.delete("/following_topics/:id", auth, checkTopicExist, unfollowTopic);
 router.get("/:id/followers_topics", listFollowingTopics);
 router.get("/:id/questions", listQuestions);
+// 赞 踩
+router.put(
+  "/liking_answers/:id",
+  auth,
+  checkAnswerExist,
+  likeAnswer,
+  undislikeAnswer
+);
+router.delete("/liking_answers/:id", auth, checkAnswerExist, unlikeAnswer);
+router.get("/:id/liking_answers", listLikingAnswers);
+
+router.put(
+  "/disliking_answers/:id",
+  auth,
+  checkAnswerExist,
+  dislikeAnswer,
+  unlikeAnswer
+);
+router.delete(
+  "/disliking_answers/:id",
+  auth,
+  checkAnswerExist,
+  undislikeAnswer
+);
+router.get("/:id/disliking_answers", listDislikingAnswers);
+
+router.put("/collecting_answers/:id", auth, checkAnswerExist, collectAnswer);
+router.delete(
+  "/collecting_answers/:id",
+  auth,
+  checkAnswerExist,
+  uncollectAnswer
+);
+router.get("/:id/collecting_answers", listCollectingAnswers);
 module.exports = router;

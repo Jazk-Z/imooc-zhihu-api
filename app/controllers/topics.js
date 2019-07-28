@@ -1,5 +1,6 @@
 const Topic = require("../models/topics");
 const User = require("../models/users");
+const Question = require("../models/questions");
 class TopicCtl {
   async find(ctx) {
     const { per_page = 10 } = ctx.query;
@@ -48,6 +49,10 @@ class TopicCtl {
   async listToicsFollowers(ctx) {
     const topics = await User.find({ followingTopics: ctx.params.id });
     ctx.body = topics;
+  }
+  async listQuestions(ctx) {
+    const questions = await Question.find({ topics: ctx.params.id });
+    ctx.body = questions;
   }
 }
 module.exports = new TopicCtl();
